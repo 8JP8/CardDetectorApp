@@ -1,0 +1,4 @@
+# Ignore PyInstaller build and distribution directories
+/dist/
+/build/
+*.spec

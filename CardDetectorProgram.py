@@ -2,7 +2,7 @@ import sys
 import os
 from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QTableWidgetItem
 from PyQt6.QtCore import QTimer, QThread, pyqtSignal, Qt
-from PyQt6.QtGui import QImage, QPixmap, QIcon, QColor
+from PyQt6.QtGui import QImage, QPixmap, QIcon, QColor, QFont
 from PyQt6.uic import loadUi
 from PyQt6 import QtCore
 import cv2
@@ -17,7 +17,7 @@ class DetectionThread(QThread):
     disable_label_signal = pyqtSignal(str,float)  # Signal to disable label
     
     global threshold
-    threshold = 0.65
+    threshold = 0.60
     
 
     def __init__(self):
@@ -36,24 +36,26 @@ class DetectionThread(QThread):
         cap = cv2.VideoCapture(0)
         
         self.started_capture_signal.emit("Capture Running") #emit capture started signal
-
+        
+        confidence = -1
         while True:
-            ret, frame = cap.read()
-
+            ret, frame = cap.read() 
+            
             result = CLIENT.infer(frame, model_id=model_id)
             predictions = result['predictions']
 
             for prediction in predictions:
                 x, y, width, height = int(prediction['x']), int(prediction['y']), int(prediction['width']), int(prediction['height'])
-                confidence = prediction['confidence']
+                if (confidence != -1) : confidence = (confidence + prediction['confidence']) / 2 
+                else: confidence = prediction['confidence']
                 class_name = prediction['class']
                 
                 # Emit signal to disable label
                 self.disable_label_signal.emit(class_name, confidence)
 
-                cv2.rectangle(frame, (x, y), (x + width, y + height), (0, 255, 0), 2)
+                cv2.rectangle(frame, (x-int(width/2), y-int(height/2)), (x + int(width/2), y + int(height/2)), (0, 255, 0), 2)
                 text = f"{class_name}: {confidence:.2f}"
-                cv2.putText(frame, text, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+                cv2.putText(frame, text, (x, y+height-2), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             #self.frame_update_signal.emit(frame)
@@ -80,14 +82,34 @@ class MyApp(QMainWindow):
         self.thread.started_capture_signal.connect(self.UpdateStatus)
         self.thread.start()
         self.UpdateStatus("Starting Camera Capture Stream")
+        self.dragging = False
+        self.offset = None
         
         #EVENTS
         self.closeAppBtn.clicked.connect(self.close_app)
         self.maximizeRestoreAppBtn.clicked.connect(self.maximize_restore_app)
         self.minimizeAppBtn.clicked.connect(self.minimize_app)
         self.resetTopBtn.clicked.connect(self.ResetCards)
-        self.TitleIconBtn.clicked.connect(self.ResetCards)
+        self.titleLabel.linkActivated.connect(self.prints)
         self.settingsTopBtn.clicked.connect(self.OpenSettings)
+        
+    def mousePressEvent(self, event):
+        if event.button() == Qt.MouseButton.LeftButton:
+            if (self.titleLabel.frameGeometry().contains(event.pos()) or self.iconLabel.frameGeometry().contains(event.pos()) or self.artLabel.frameGeometry().contains(event.pos())):
+                self.dragging = True
+                self.offset = event.globalPosition().toPoint() - self.pos()
+
+    def mouseMoveEvent(self, event):
+        if self.dragging:
+            self.move(event.globalPosition().toPoint() - self.offset)
+
+    def mouseReleaseEvent(self, event):
+        if event.button() == Qt.MouseButton.LeftButton:
+            self.dragging = False
+            self.offset = None
+
+    def prints(self):
+        print("heasddasd")
         
     def close_app(self):
         app.closeAllWindows()
