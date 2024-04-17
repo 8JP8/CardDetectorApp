@@ -30,7 +30,7 @@ python CardDetectorProgram.py
 4. The application will launch, allowing you to either upload an image/video or use your webcam for real-time detection.
 5. Once the detection is complete, the detected playing cards will be highlighted or labeled on the screen.
 
-## Note
-> - Ensure that you have a stable internet connection during the initial setup as the YOLOv4 pre-trained model will be downloaded from Roboflow.
+> [!NOTE]
+ - Ensure that you have a stable internet connection during the initial setup as the YOLOv4 pre-trained model will be downloaded from Roboflow.
 > - For optimal performance, use a machine with a GPU.
 > - If you encounter any issues, refer to the documentation of the individual packages or contact the developers for support.
