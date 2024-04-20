@@ -10,6 +10,13 @@ import numpy as np
 from inference_sdk import InferenceHTTPClient
 import configparser
 import win32gui, win32con
+import torch
+import configparser
+from PIL import Image
+
+# Import attempt_load from yolov5 module
+sys.path.append(os.path.join(os.getcwd(), 'yolov5'))  # Add yolov5 directory to system path
+from yolov5.models.experimental import attempt_load
 
 class DetectionThread(QThread):
     #SIGNALS
@@ -25,14 +32,20 @@ class DetectionThread(QThread):
         super().__init__()
 
     def run(self):
+        global offlinedetection
         config = configparser.ConfigParser()
         config.read(os.path.join(os.getcwd(), 'config.ini'))
+        offlinedetection = config.get('detection', 'offlinedetection')
+
                     
         CLIENT = InferenceHTTPClient(
             api_url="https://detect.roboflow.com",
             api_key=config.get('roboflow', "api_key"))
 
         model_id = "playing-cards-ow27d/4"
+        if offlinedetection:
+            model_path = os.path.join(os.getcwd(), config.get('detection','model_path'))
+
 
         cap = cv2.VideoCapture(0)
         
@@ -42,7 +55,16 @@ class DetectionThread(QThread):
         while True:
             ret, frame = cap.read() 
             
-            result = CLIENT.infer(frame, model_id=model_id)
+            if not offlinedetection:
+                try: result = CLIENT.infer(frame, model_id=model_id)
+                except:  pass
+            else:
+                model = attempt_load(model_path)
+                # Load the pre-trained model
+                #model = torch.load(model_path, map_location=torch.device('cpu'))  # Assuming "best.pt" is a PyTorch model file
+                 # Convert the frame to PIL Image
+                result = model(frame)
+                print(result)
             predictions = result['predictions']
 
             for prediction in predictions:
