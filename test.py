@@ -3,6 +3,9 @@ import cv2
 import numpy as np
 from yolov5.models.experimental import attempt_load
 from yolov5.utils.general import non_max_suppression
+import os
+
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 def scale_coords(img_shape, coords, actual_shape):
     gain = min(img_shape[0] / actual_shape[0], img_shape[1] / actual_shape[1])
@@ -13,8 +16,6 @@ def scale_coords(img_shape, coords, actual_shape):
     coords[:, :4] /= gain  # Scale coordinates
     coords[:, :4] = torch.clip(coords[:, :4], 0, img_shape[1])  # Clip coordinates to image boundaries
     return coords
-
-
 
 
 def letterbox(img, new_shape=(640, 640), color=(114, 114, 114), auto=True, scaleFill=False, scaleup=True):
@@ -51,8 +52,8 @@ def letterbox(img, new_shape=(640, 640), color=(114, 114, 114), auto=True, scale
 
 # Load the YOLOv5 model
 weights_path = 'model.pt'
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-model = attempt_load(weights_path)
+device = torch.device("""'cuda' if torch.cuda.is_available() else""" 'cpu')
+model = attempt_load(weights_path)  # Ensure model is loaded to appropriate device
 model.eval()
 
 # Open a connection to the camera
