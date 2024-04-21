@@ -35,6 +35,5 @@ python CardDetectorProgram.py
 5. Once the detection is complete, the detected playing cards will be highlighted or labeled on the screen.
 
 ## Notes
- - Ensure that you have a stable internet connection during the initial setup as the YOLOv4 pre-trained model will be downloaded from Roboflow.
- - For optimal performance, use a machine with a GPU.
+ - For optimal performance, use a machine with a GPU and retrain the model with [this dataset](https://universe.roboflow.com/augmented-startups/playing-cards-ow27d/dataset/4).
  - If you encounter any issues, refer to the documentation of the individual packages or contact the developers for support.
