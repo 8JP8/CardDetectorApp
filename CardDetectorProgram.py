@@ -70,7 +70,6 @@ class DetectionThread(QThread):
         cap = cv2.VideoCapture(0) # Open a connection to the camera
         
         self.started_capture_signal.emit("Capture Running") #emit capture started signal
-        
         confidence = []
         while True:
             ret, frame = cap.read() 
@@ -106,7 +105,7 @@ class DetectionThread(QThread):
                         result[:, :4] = self.scale_coords(img.shape[2:], result[:, :4], frame.shape).round()
                     for x1, y1, x2, y2, confidence, cls_pred in result:
                         class_name = card_names[int(cls_pred)]
-                        print(f'Card: {class_name} [{cls_pred}] - Confidence: {confidence} - Bounding Box: {(int(x1), int(y1), int(x2), int(y2))}')
+                        print(f'Card: {class_name} [{int(cls_pred)}] - Confidence: {confidence} - Bounding Box: {(int(x1), int(y1), int(x2), int(y2))}')
 
                         # Draw bounding box on the frame
                         text = f"{class_name} - {confidence:.2f}"
@@ -145,7 +144,6 @@ class MyApp(QMainWindow):
         self.thread.started_capture_signal.connect(self.UpdateStatus)
         self.thread.toggle_label_signal.connect(self.toggle_label)
         self.thread.start()
-        self.UpdateStatus("Starting Camera Capture Stream")
         self.dragging = False
         self.offset = None
         self.pixmaplist = []
@@ -155,6 +153,7 @@ class MyApp(QMainWindow):
         self.hearts_sum = 0
         self.clubs_sum = 0
         self.diamonds_sum = 0
+        self.UpdateStatus("Starting Camera Capture Stream")
         
         #EVENTS
         self.closeAppBtn.clicked.connect(self.close_app)
@@ -244,9 +243,11 @@ class MyApp(QMainWindow):
         self.spades_sum_Lcd.display(self.spades_sum)
         self.clubs_sum_Lcd.display(self.clubs_sum)
         self.diamonds_sum_Lcd.display(self.diamonds_sum)
-
-                
-        
+        if "Idle" in self.statuslb.text(): self.UpdateStatus("Idle")
+        if "Starting Camera Capture Stream" in self.statuslb.text(): self.UpdateStatus("Starting Camera Capture Stream")
+        elif "Capture Started" in self.statuslb.text(): self.UpdateStatus("Capture Started")
+        else: self.UpdateStatus(self.statuslb.text()[:-5])
+    
     def close_app(self):
         app.closeAllWindows()
         
@@ -291,6 +292,7 @@ class MyApp(QMainWindow):
                     self.tableWidget.setItem(row, 2, confd)
                 break  # Exit loop once the row is found
         self.UpdateConfidenceAverage()
+        self.UpdateStatus("Capture Running")
     
     def UpdateConfidenceAverage(self):
         total_confidence = 0
@@ -344,6 +346,8 @@ class MyApp(QMainWindow):
 
             
     def UpdateStatus(self, message):
+        if self.points_sum != 0:
+            message += f" - {self.points_sum}"
         self.statuslb.setText("Status: " + message)
             
     def OpenSettings(self):
