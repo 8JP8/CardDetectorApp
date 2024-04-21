@@ -1,6 +1,3 @@
-# Ignore PyInstaller build and distribution directories
-/dist/
+#/dist/
 /build/
 *.spec
-compile.py
-install.bat

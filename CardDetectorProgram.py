@@ -15,10 +15,6 @@ import configparser
 from yolov5.models.experimental import attempt_load
 from yolov5.utils.general import non_max_suppression
 
-# Import attempt_load from yolov5 module
-sys.path.append(os.path.join(os.getcwd(), 'yolov5'))  # Add yolov5 directory to system path
-from yolov5.models.experimental import attempt_load
-
 class DetectionThread(QThread):
     #SIGNALS
     toggle_label_signal = pyqtSignal(QLabel)
