@@ -5,7 +5,7 @@ from cx_Freeze import setup, Executable
 # Dependencies (add any additional dependencies your app may have)
 build_exe_options = {
     "packages": ["PyQt6", "cv2", "numpy", "inference_sdk", "configparser", "win32gui", "win32con", "torch", "torchvision", "yolov5", "seaborn"],
-    #"excludes": ["tkinter"],
+    "excludes": ["tkinter"],
     "include_files": [
         "images/",   # Include the entire images directory
         "themes/",   # Include the entire themes directory

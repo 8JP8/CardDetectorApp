@@ -62,16 +62,15 @@ class DetectionThread(QThread):
             use_cuda = config.getboolean('detection', 'model_use_cuda')
             if use_cuda:
                 if torch.cuda.is_available():
-                    model_path = os.path.join(os.getcwd(), config.get('detection','cuda_model_path'))
-                    if len(model_path.strip()) == 0: use_cuda = False
+                    if os.path.exists(os.path.join(os.getcwd(),config.get('detection','cuda_model_path'))):
+                        model_path = os.path.join(os.getcwd(), config.get('detection','cuda_model_path'))
+                    else: use_cuda = False
                 else:
                     use_cuda = False
                     self.warning_message_signal.emit("<a href='https://pytorch.org/get-started/locally/'>Torch CUDA</a> not available (Falling back to CPU model)", "Warning", "Load Model - Warning")
             
             device = torch.device('cuda' if use_cuda else 'cpu')
 
-
-                
             model = attempt_load(model_path)  # Ensure model is loaded to appropriate device
             model.eval()
 
