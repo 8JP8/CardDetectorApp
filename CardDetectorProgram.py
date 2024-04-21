@@ -58,7 +58,8 @@ class DetectionThread(QThread):
         if offlinedetection:
             model_path = os.path.join(os.getcwd(), config.get('detection','model_path'))
             # Load the YOLOv5 model'
-            device = torch.device('cpu') #'cuda' if torch.cuda.is_available() else
+            device = torch.device('cpu') #Put this if you want to use cuda (you have to have a model trained with a cuda gpu): device = torch.device('cuda' if torch.cuda.is_available() else 'cpu' )
+                
             model = attempt_load(model_path)  # Ensure model is loaded to appropriate device
             model.eval()
 
