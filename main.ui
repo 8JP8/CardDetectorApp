@@ -4318,7 +4318,7 @@ Confidence</string>
                   <property name="font">
                    <font>
                     <family>Segoe UI</family>
-                    <pointsize>1</pointsize>
+                    <pointsize>-1</pointsize>
                     <weight>50</weight>
                     <italic>false</italic>
                     <bold>false</bold>
@@ -4345,7 +4345,7 @@ Confidence</string>
                 <item>
                  <widget class="QLabel" name="versionlb">
                   <property name="text">
-                   <string>v2.0.1</string>
+                   <string>v2.0.2</string>
                   </property>
                   <property name="alignment">
                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -4367,8 +4367,6 @@ Confidence</string>
    </layout>
   </widget>
  </widget>
- <resources>
-  <include location="resources.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>
