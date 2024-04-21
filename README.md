@@ -1,6 +1,6 @@
 # Playing Card Detector App
 
-This application utilizes OpenCV and a YOLOv4 pre-trained model from Roboflow to detect playing cards in images or video streams. It requires Python 3.10 and several dependencies listed below.
+This application utilizes OpenCV and a YOLOv5 pre-trained model from Roboflow or the local pre-trained model to detect playing cards in images or video streams. It requires Python 3.10 and several dependencies listed below.
 
 ## Requirements
 
