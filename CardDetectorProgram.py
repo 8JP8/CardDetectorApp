@@ -1,6 +1,6 @@
 import sys
 import os
-from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QTableWidgetItem
+from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QTableWidgetItem, QMessageBox
 from PyQt6.QtCore import QThread, pyqtSignal, Qt, QTimer
 from PyQt6.QtGui import QIcon, QColor, QPainter, QPixmap
 from PyQt6.uic import loadUi
@@ -20,6 +20,7 @@ class DetectionThread(QThread):
     toggle_label_signal = pyqtSignal(QLabel)
     started_capture_signal = pyqtSignal(str)
     frame_update_signal = pyqtSignal(np.ndarray)
+    warning_message_signal = pyqtSignal(str, str, str)
     disable_label_signal = pyqtSignal(str,float)  # Signal to disable label
     
     global card_names, lable_enabled_list
@@ -58,7 +59,18 @@ class DetectionThread(QThread):
         if offlinedetection:
             model_path = os.path.join(os.getcwd(), config.get('detection','model_path'))
             # Load the YOLOv5 model'
-            device = torch.device('cpu') #Put this if you want to use cuda (you have to have a model trained with a cuda gpu): device = torch.device('cuda' if torch.cuda.is_available() else 'cpu' )
+            use_cuda = config.getboolean('detection', 'model_use_cuda')
+            if use_cuda:
+                if torch.cuda.is_available():
+                    model_path = os.path.join(os.getcwd(), config.get('detection','cuda_model_path'))
+                    if len(model_path.strip()) == 0: use_cuda = False
+                else:
+                    use_cuda = False
+                    self.warning_message_signal.emit("<a href='https://pytorch.org/get-started/locally/'>Torch CUDA</a> not available (Falling back to CPU model)", "Warning", "Load Model - Warning")
+            
+            device = torch.device('cuda' if use_cuda else 'cpu')
+
+
                 
             model = attempt_load(model_path)  # Ensure model is loaded to appropriate device
             model.eval()
@@ -140,6 +152,7 @@ class MyApp(QMainWindow):
         self.thread.disable_label_signal.connect(self.BlackOutCard)
         self.thread.started_capture_signal.connect(self.UpdateStatus)
         self.thread.toggle_label_signal.connect(self.toggle_label)
+        self.thread.warning_message_signal.connect(self.message_box_warning)
         self.thread.start()
         self.dragging = False
         self.offset = None
@@ -378,6 +391,19 @@ class MyApp(QMainWindow):
             for name, o_pixmap in self.pixmaplist:
                 if name == label.objectName():
                     label.setPixmap(o_pixmap)
+
+    def message_box_warning(self, message, type, title):
+        msg_box = QMessageBox()
+        msg_box.setWindowTitle(title)
+        msg_box.setTextFormat(Qt.TextFormat.RichText)  # Set text format to RichText
+        if type == "Error":
+            msg_box.setIcon(QMessageBox.Icon.Critical)
+        elif type == "Warning":
+            msg_box.setIcon(QMessageBox.Icon.Warning)
+        elif type == "Info":
+            msg_box.setIcon(QMessageBox.Icon.Information)
+        msg_box.setText(message)
+        msg_box.exec()
             
     
 if __name__ == '__main__':
