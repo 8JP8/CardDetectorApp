@@ -326,6 +326,7 @@ class MyApp(QMainWindow):
                         
             
     def ResetCards(self):
+        self.UpdateStatus("Starting Camera Capture Stream")
         if not self.thread.isRunning():
             self.thread.start()
         # Iterate through all child widgets of the main window
