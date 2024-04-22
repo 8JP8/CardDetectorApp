@@ -21,7 +21,7 @@ This application utilizes OpenCV and a YOLOv5 pre-trained model from Roboflow or
 2. Install the required packages using pip:
 
 ```bash
-pip install opencv-python pyqt6 numpy inference_sdk configparser pywin32 torch torchvision yolov5
+pip install pyqt6 numpy inference_sdk configparser pywin32 torch torchvision yolov5 opencv-python
 ```
 
 ## Usage
