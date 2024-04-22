@@ -394,7 +394,7 @@ class MyApp(QMainWindow):
     def message_box_warning(self, message, type, title):
         msg_box = QMessageBox()
         msg_box.setWindowTitle(title)
-        msg_box.setIcon(os.path.join(os.getcwd(), "images", "images", "icon_black.ico"))
+        msg_box.setWindowIcon(QIcon(os.path.join(os.getcwd(), "images", "images", "icon_black.ico")))
         msg_box.setTextFormat(Qt.TextFormat.RichText)  # Set text format to RichText
         if type == "Error":
             msg_box.setIcon(QMessageBox.Icon.Critical)
