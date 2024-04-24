@@ -253,9 +253,8 @@ class MyApp(QMainWindow):
         self.clubs_sum_Lcd.display(self.clubs_sum)
         self.diamonds_sum_Lcd.display(self.diamonds_sum)
         if "Idle" in self.statuslb.text(): self.UpdateStatus("Idle")
-        if "Starting Camera Capture Stream" in self.statuslb.text(): self.UpdateStatus("Starting Camera Capture Stream")
+        elif "Starting Camera Capture Stream" in self.statuslb.text(): self.UpdateStatus("Starting Camera Capture Stream")
         elif "Capture Started" in self.statuslb.text(): self.UpdateStatus("Capture Started")
-        else: self.UpdateStatus(self.statuslb.text()[:-5])
     
     def close_app(self):
         app.closeAllWindows()
@@ -326,7 +325,6 @@ class MyApp(QMainWindow):
                         
             
     def ResetCards(self):
-        self.UpdateStatus("Starting Camera Capture Stream")
         if not self.thread.isRunning():
             self.thread.start()
         # Iterate through all child widgets of the main window
@@ -346,6 +344,7 @@ class MyApp(QMainWindow):
         self.clubs_sum_Lcd.display(self.clubs_sum)
         self.diamonds_sum_Lcd.display(self.diamonds_sum)
         self.averageconfidence_Lcd.display(0)
+        self.UpdateStatus("Starting Camera Capture Stream")
         for row in range(1, self.tableWidget.rowCount()):
             # Replace values in the second column with "Not Found"
             item = QTableWidgetItem("Not Found")
