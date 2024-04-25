@@ -75,7 +75,7 @@ class DetectionThread(QThread):
             model.eval()
 
 
-        cap = cv2.VideoCapture(0) # Open a connection to the camera
+        cap = cv2.VideoCapture(config.getint('detection','camera_index')) # Open a connection to the camera
         
         self.started_capture_signal.emit("Capture Running") #emit capture started signal
         confidence = []
